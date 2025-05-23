@@ -36,9 +36,14 @@ class IPAddress:
     
     def isMask(self):
         ip_formated = self.__ip.split(".")
-        for i in range(4):
-            if int(ip_formated[i]) > 255:
-                return False
+        try:
+            mask_bin = ''.join(f"{int(octeto):08b}" for octeto in ip_formated)
+        except ValueError:
+            return False
+        if len(mask_bin) != 32:
+            return False
+        if '01' in mask_bin:
+            return False
         return True
     
     def maskBits(self):
@@ -75,7 +80,10 @@ class IPToolIF:
         
         broadcast_bits = []
         for i in range(4):
-            broadcast_bits.append(str(int(ip_bits[i]) | ~int(mask_bits[i])))
+            ip_oct = int(ip_bits[i], 2)
+            mask_oct = int(mask_bits[i], 2)
+            broadcast_oct = ip_oct | (255 - mask_oct)
+            broadcast_bits.append(str(broadcast_oct))
         
         broadcast_ip = ".".join(broadcast_bits)
         return IPAddress(broadcast_ip)
@@ -87,7 +95,7 @@ class IPToolIF:
         
         network_bits = []
         for i in range(4):
-            network_bits.append(str(int(ip_bits[i]) & int(mask_bits[i])))
+            network_bits.append(str(int(ip_bits[i], 2) & int(mask_bits[i], 2)))
         
         network_ip = ".".join(network_bits)
         return IPAddress(network_ip)
