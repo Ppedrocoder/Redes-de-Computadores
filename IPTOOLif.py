@@ -47,6 +47,8 @@ class IPAddress:
         return True
     
     def maskBits(self):
+        if not self.isMask():
+            raise ValueError("maskBits só pode ser chamada para máscaras válidas.")
         ip_formated = self.__ip.split(".")
         bits = 0
         for i in range(4):
@@ -61,49 +63,50 @@ class IPToolIF:
             if int(ip_formated[i]) > 255:
                 return False
         return True
-    
+
     @staticmethod
     def areSameNet(ip1: IPAddress, ip2: IPAddress, mask: IPAddress) -> bool:
+        if not (IPToolIF.isValid(ip1) and IPToolIF.isValid(ip2) and IPToolIF.isValid(mask)):
+            raise ValueError("Todos os IPs devem ser válidos.")
         ip1_bits = ip1.toBits().split(".")
         ip2_bits = ip2.toBits().split(".")
         mask_bits = mask.toBits().split(".")
-        
         for i in range(4):
             if (int(ip1_bits[i]) & int(mask_bits[i])) != (int(ip2_bits[i]) & int(mask_bits[i])):
                 return False
         return True
-    
+
     @staticmethod
     def broadcast(ip: IPAddress, mask: IPAddress) -> IPAddress:
+        if not (IPToolIF.isValid(ip) and IPToolIF.isValid(mask)):
+            raise ValueError("IP e máscara devem ser válidos.")
         ip_bits = ip.toBits().split(".")
         mask_bits = mask.toBits().split(".")
-        
         broadcast_bits = []
         for i in range(4):
             ip_oct = int(ip_bits[i], 2)
             mask_oct = int(mask_bits[i], 2)
             broadcast_oct = ip_oct | (255 - mask_oct)
             broadcast_bits.append(str(broadcast_oct))
-        
         broadcast_ip = ".".join(broadcast_bits)
         return IPAddress(broadcast_ip)
-    
+
     @staticmethod
     def network(ip: IPAddress, mask: IPAddress) -> IPAddress:
+        if not (IPToolIF.isValid(ip) and IPToolIF.isValid(mask)):
+            raise ValueError("IP e máscara devem ser válidos.")
         ip_bits = ip.toBits().split(".")
         mask_bits = mask.toBits().split(".")
-        
         network_bits = []
         for i in range(4):
             network_bits.append(str(int(ip_bits[i], 2) & int(mask_bits[i], 2)))
-        
         network_ip = ".".join(network_bits)
         return IPAddress(network_ip)
     
 # Testando a classe IPAddress
 if __name__ == "__main__":
     ip1 = IPAddress("192.168.20.2")
-    ip2 = IPAddress("192.167.20.20")
+    ip2 = IPAddress("192.169.20.20")
     mask = IPAddress("255.240.0.0")
     print("IP1:", ip1.toIPv4())
     print("IP1 em bits:", ip1.toBits())
