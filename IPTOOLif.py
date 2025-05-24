@@ -66,7 +66,7 @@ class IPToolIF:
 
     @staticmethod
     def areSameNet(ip1: IPAddress, ip2: IPAddress, mask: IPAddress) -> bool:
-        if not (IPToolIF.isValid(ip1) and IPToolIF.isValid(ip2) and IPToolIF.isValid(mask)):
+        if not (IPToolIF.isValid(ip1) and IPToolIF.isValid(ip2) and IPAddress.isMask(mask)):
             raise ValueError("Todos os IPs devem ser válidos.")
         ip1_bits = ip1.toBits().split(".")
         ip2_bits = ip2.toBits().split(".")
@@ -78,7 +78,7 @@ class IPToolIF:
 
     @staticmethod
     def broadcast(ip: IPAddress, mask: IPAddress) -> IPAddress:
-        if not (IPToolIF.isValid(ip) and IPToolIF.isValid(mask)):
+        if not (IPToolIF.isValid(ip) and IPAddress.isMask(mask)):
             raise ValueError("IP e máscara devem ser válidos.")
         ip_bits = ip.toBits().split(".")
         mask_bits = mask.toBits().split(".")
@@ -93,7 +93,7 @@ class IPToolIF:
 
     @staticmethod
     def network(ip: IPAddress, mask: IPAddress) -> IPAddress:
-        if not (IPToolIF.isValid(ip) and IPToolIF.isValid(mask)):
+        if not (IPToolIF.isValid(ip) and IPAddress.isMask(mask)):
             raise ValueError("IP e máscara devem ser válidos.")
         ip_bits = ip.toBits().split(".")
         mask_bits = mask.toBits().split(".")
